@@ -1,9 +1,9 @@
 import {
-  Car, Map, CalendarDays, LayoutDashboard, LogOut, Settings,
-  MapPin, Users, BarChart3, ParkingCircle, Home,
+  Car, Map, CalendarDays, LayoutDashboard, LogOut,
+  MapPin, Users, BarChart3, ParkingCircle, Home, CreditCard, History,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
@@ -16,15 +16,15 @@ const userItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Find Parking", url: "/map", icon: Map },
   { title: "Book Slot", url: "/book", icon: CalendarDays },
-  { title: "My Bookings", url: "/bookings", icon: Car },
+  { title: "My Bookings", url: "/bookings", icon: History },
   { title: "3D View", url: "/parking-3d", icon: ParkingCircle },
 ];
 
 const adminItems = [
-  { title: "Admin Dashboard", url: "/admin", icon: BarChart3 },
-  { title: "Manage Locations", url: "/admin/locations", icon: MapPin },
-  { title: "Manage Slots", url: "/admin/slots", icon: ParkingCircle },
-  { title: "View Bookings", url: "/admin/bookings", icon: CalendarDays },
+  { title: "Admin Overview", url: "/admin", icon: BarChart3 },
+  { title: "Locations", url: "/admin/locations", icon: MapPin },
+  { title: "Slots", url: "/admin/slots", icon: ParkingCircle },
+  { title: "Bookings", url: "/admin/bookings", icon: CalendarDays },
   { title: "Users", url: "/admin/users", icon: Users },
 ];
 
@@ -44,7 +44,9 @@ export function AppSidebar() {
       <SidebarContent>
         {/* Logo */}
         <div className="flex items-center gap-2 p-4 border-b border-sidebar-border">
-          <Car className="h-7 w-7 text-sidebar-primary flex-shrink-0" />
+          <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center flex-shrink-0">
+            <Car className="h-4 w-4 text-sidebar-primary-foreground" />
+          </div>
           {!collapsed && (
             <span className="text-lg font-bold text-sidebar-foreground">SmartPark</span>
           )}
@@ -88,7 +90,7 @@ export function AppSidebar() {
         {/* Admin navigation */}
         {isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupLabel>Admin Panel</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {adminItems.map((item) => (

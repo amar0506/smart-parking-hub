@@ -17,7 +17,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-const SATNA_CENTER: [number, number] = [24.5726, 80.8322];
+// India center coordinates
+const INDIA_CENTER: [number, number] = [22.5937, 78.9629];
 
 interface ParkingLocation {
   id: string;
@@ -58,7 +59,7 @@ export default function ParkingMapPage() {
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
               <MapPin className="h-6 w-6 text-primary" /> Parking Map
             </h1>
-            <p className="text-muted-foreground">Find parking locations in Satna, MP</p>
+            <p className="text-muted-foreground">Find parking locations near you</p>
           </div>
           <div className="relative w-full sm:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -72,7 +73,7 @@ export default function ParkingMapPage() {
             <Card className="overflow-hidden">
               <CardContent className="p-0">
                 <div className="h-[500px]">
-                  <MapContainer center={SATNA_CENTER} zoom={14} className="h-full w-full" scrollWheelZoom>
+                  <MapContainer center={INDIA_CENTER} zoom={5} className="h-full w-full" scrollWheelZoom>
                     <TileLayer
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                       attribution='&copy; OpenStreetMap contributors'
@@ -99,7 +100,7 @@ export default function ParkingMapPage() {
             {loading ? (
               <Card><CardContent className="p-6 text-center text-muted-foreground">Loading...</CardContent></Card>
             ) : filtered.length === 0 ? (
-              <Card><CardContent className="p-6 text-center text-muted-foreground">No parking locations found. Admin needs to add locations.</CardContent></Card>
+              <Card><CardContent className="p-6 text-center text-muted-foreground">No parking locations found.</CardContent></Card>
             ) : (
               filtered.map((loc) => (
                 <Card key={loc.id} className="hover:shadow-md transition-shadow animate-fade-in">
