@@ -20,6 +20,7 @@ export type Database = {
           end_time: string
           id: string
           location_id: string
+          payment_status: string
           slot_id: string
           start_time: string
           status: string
@@ -32,6 +33,7 @@ export type Database = {
           end_time: string
           id?: string
           location_id: string
+          payment_status?: string
           slot_id: string
           start_time: string
           status?: string
@@ -44,6 +46,7 @@ export type Database = {
           end_time?: string
           id?: string
           location_id?: string
+          payment_status?: string
           slot_id?: string
           start_time?: string
           status?: string
