@@ -9,7 +9,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <div className="flex-1 flex flex-col">
           <header className="h-14 flex items-center border-b border-border px-4 bg-card/50 backdrop-blur-sm">
             <SidebarTrigger className="mr-4" />
-            <h2 className="text-sm font-medium text-muted-foreground">Smart Parking Finder — Satna, MP</h2>
+            <h2 className="text-sm font-medium text-muted-foreground">Smart Parking Management System</h2>
           </header>
           <main className="flex-1 p-6 overflow-auto">{children}</main>
         </div>

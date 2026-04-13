@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Car, Map, Shield, Zap, ArrowRight, ParkingCircle, MapPin } from "lucide-react";
+import { Car, Map, Shield, Zap, ArrowRight, ParkingCircle, MapPin, CreditCard, BarChart3, Clock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function HomePage() {
@@ -12,7 +12,9 @@ export default function HomePage() {
       <nav className="fixed top-0 w-full z-50 bg-card/80 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-2">
-            <Car className="h-7 w-7 text-primary" />
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
+              <Car className="h-5 w-5 text-primary-foreground" />
+            </div>
             <span className="text-xl font-bold text-foreground">SmartPark</span>
           </div>
           <div className="hidden md:flex items-center gap-6">
@@ -36,19 +38,20 @@ export default function HomePage() {
       </nav>
 
       {/* Hero */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="container mx-auto text-center">
+      <section className="pt-32 pb-20 px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+        <div className="container mx-auto text-center relative">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium mb-6 animate-fade-in">
             <Zap className="h-4 w-4" />
-            Smart Parking for Satna, Madhya Pradesh
+            Smart Parking Management System
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight animate-slide-up">
             Find & Book Parking<br />
             <span className="text-primary">In Seconds</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 animate-slide-up">
-            Real-time parking availability, interactive maps, and instant booking. 
-            Never circle the block looking for parking again.
+            Real-time parking availability, interactive maps, 3D visualization, and instant UPI booking. 
+            The complete smart parking solution.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
             <Link to="/register">
@@ -69,12 +72,13 @@ export default function HomePage() {
       <section className="py-12 border-y border-border/50 bg-card/50">
         <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 px-4">
           {[
-            { label: "Parking Locations", value: "15+" },
-            { label: "Slots Available", value: "500+" },
-            { label: "Happy Users", value: "2K+" },
-            { label: "Bookings Made", value: "10K+" },
+            { label: "Parking Locations", value: "15+", icon: MapPin },
+            { label: "Slots Available", value: "500+", icon: ParkingCircle },
+            { label: "Happy Users", value: "2K+", icon: Shield },
+            { label: "Bookings Made", value: "10K+", icon: BarChart3 },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
+              <stat.icon className="h-6 w-6 text-primary mx-auto mb-2" />
               <div className="text-3xl font-bold text-primary">{stat.value}</div>
               <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
             </div>
@@ -85,12 +89,16 @@ export default function HomePage() {
       {/* Features */}
       <section id="features" className="py-20 px-4">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center text-foreground mb-12">Why SmartPark?</h2>
+          <h2 className="text-3xl font-bold text-center text-foreground mb-4">Why SmartPark?</h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">Advanced features for a seamless parking experience</p>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: Map, title: "Interactive Map", desc: "Find parking spots on a live map of Satna with real-time availability." },
-              { icon: ParkingCircle, title: "3D Visualization", desc: "See a realistic 3D view of parking lots with animated car movements." },
-              { icon: Shield, title: "Secure Booking", desc: "Book your slot in advance with guaranteed reservation and easy cancellation." },
+              { icon: Map, title: "Interactive Map", desc: "Find parking spots on a live map with real-time availability and navigation." },
+              { icon: ParkingCircle, title: "3D Visualization", desc: "See a realistic 3D view of parking lots with animated car movements and slot status." },
+              { icon: Shield, title: "Secure Booking", desc: "Book your slot with UPI payment, guaranteed reservation and easy cancellation." },
+              { icon: CreditCard, title: "UPI Payment", desc: "Seamless UPI-based payment integration with QR code scanning for instant booking." },
+              { icon: BarChart3, title: "Smart Analytics", desc: "Real-time occupancy analytics, usage trends, and intelligent slot recommendations." },
+              { icon: Clock, title: "Reservation Timer", desc: "Time-based reservations with automatic slot release and extension options." },
             ].map((f) => (
               <div key={f.title} className="stat-card group hover:border-primary/30 cursor-default">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
@@ -108,14 +116,15 @@ export default function HomePage() {
       <section id="how-it-works" className="py-20 px-4 bg-card/50 border-y border-border/50">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">How It Works</h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto">
             {[
-              { step: "1", title: "Search Location", desc: "Browse the map or search for parking near you in Satna." },
+              { step: "1", title: "Search Location", desc: "Browse the map or search for parking near your destination." },
               { step: "2", title: "Choose a Slot", desc: "Pick an available slot, check pricing, and select your time." },
-              { step: "3", title: "Book & Park", desc: "Confirm your booking and head straight to your reserved spot." },
+              { step: "3", title: "Pay via UPI", desc: "Scan the QR code and complete payment instantly via UPI." },
+              { step: "4", title: "Park & Go", desc: "Booking confirmed! Head straight to your reserved parking spot." },
             ].map((s) => (
               <div key={s.step} className="text-center">
-                <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold mx-auto mb-4 shadow-lg">
                   {s.step}
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">{s.title}</h3>
@@ -132,9 +141,9 @@ export default function HomePage() {
           <MapPin className="h-10 w-10 text-primary mx-auto mb-4" />
           <h2 className="text-3xl font-bold text-foreground mb-4">About SmartPark</h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            SmartPark is a smart parking management system designed for Satna, Madhya Pradesh, India.
-            Our platform uses real-time data and interactive maps to help drivers find, book, and manage
-            parking spaces efficiently. Built as a professional demonstration of modern web technologies.
+            SmartPark is an advanced smart parking management system designed for modern cities.
+            Our platform uses real-time data, interactive maps, 3D visualization, and UPI payments to help drivers find, book, and manage
+            parking spaces efficiently. Built with cutting-edge web technologies for a seamless experience.
           </p>
         </div>
       </section>
@@ -142,7 +151,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="py-8 border-t border-border/50 bg-card/50">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2026 SmartPark — Smart Parking Finder for Satna, MP, India</p>
+          <p>© 2026 SmartPark — Smart Parking Management System</p>
         </div>
       </footer>
     </div>

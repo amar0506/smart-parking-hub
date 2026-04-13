@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { MapPin, Plus, Trash2, Edit } from "lucide-react";
+import { MapPin, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ParkingLocation {
@@ -18,7 +18,7 @@ export default function AdminLocations() {
   const [locations, setLocations] = useState<ParkingLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", address: "", lat: "24.5726", lng: "80.8322", total_slots: "20", price_per_hour: "20" });
+  const [form, setForm] = useState({ name: "", address: "", lat: "", lng: "", total_slots: "20", price_per_hour: "20" });
 
   const fetchLocations = async () => {
     const { data } = await supabase.from("parking_locations").select("*").order("created_at", { ascending: false });
@@ -43,7 +43,7 @@ export default function AdminLocations() {
     } else {
       toast({ title: "Location added!" });
       setDialogOpen(false);
-      setForm({ name: "", address: "", lat: "24.5726", lng: "80.8322", total_slots: "20", price_per_hour: "20" });
+      setForm({ name: "", address: "", lat: "", lng: "", total_slots: "20", price_per_hour: "20" });
       fetchLocations();
     }
   };
@@ -62,7 +62,7 @@ export default function AdminLocations() {
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
               <MapPin className="h-6 w-6 text-primary" /> Manage Locations
             </h1>
-            <p className="text-muted-foreground">Add and manage parking locations in Satna</p>
+            <p className="text-muted-foreground">Add and manage parking locations</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
@@ -79,16 +79,16 @@ export default function AdminLocations() {
                 </div>
                 <div className="space-y-2">
                   <Label>Address</Label>
-                  <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Main Road, Satna" required />
+                  <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Main Road, City" required />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Latitude</Label>
-                    <Input type="number" step="any" value={form.lat} onChange={(e) => setForm({ ...form, lat: e.target.value })} required />
+                    <Input type="number" step="any" value={form.lat} onChange={(e) => setForm({ ...form, lat: e.target.value })} placeholder="20.5937" required />
                   </div>
                   <div className="space-y-2">
                     <Label>Longitude</Label>
-                    <Input type="number" step="any" value={form.lng} onChange={(e) => setForm({ ...form, lng: e.target.value })} required />
+                    <Input type="number" step="any" value={form.lng} onChange={(e) => setForm({ ...form, lng: e.target.value })} placeholder="78.9629" required />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">

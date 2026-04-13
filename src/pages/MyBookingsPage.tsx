@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Car, XCircle } from "lucide-react";
@@ -15,8 +15,10 @@ interface Booking {
   start_time: string;
   end_time: string;
   status: string;
+  payment_status: string;
   total_amount: number | null;
   created_at: string;
+  slot_id: string;
   parking_locations: { name: string; address: string } | null;
   parking_slots: { slot_number: string; floor: number | null } | null;
 }
@@ -55,6 +57,12 @@ export default function MyBookingsPage() {
     return "bg-destructive/10 text-destructive border-destructive/20";
   };
 
+  const paymentColor = (s: string) => {
+    if (s === "paid") return "bg-accent/10 text-accent border-accent/20";
+    if (s === "pending") return "bg-warning/10 text-warning border-warning/20";
+    return "bg-destructive/10 text-destructive border-destructive/20";
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -81,9 +89,10 @@ export default function MyBookingsPage() {
                 <CardContent className="p-5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold text-foreground">{b.parking_locations?.name || "Unknown"}</h3>
                         <Badge variant="outline" className={statusColor(b.status)}>{b.status}</Badge>
+                        <Badge variant="outline" className={paymentColor(b.payment_status)}>{b.payment_status}</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
                         Slot {b.parking_slots?.slot_number} • Floor {b.parking_slots?.floor || 1} • {b.vehicle_number}
@@ -97,7 +106,7 @@ export default function MyBookingsPage() {
                         <span className="text-lg font-bold text-primary">₹{b.total_amount}</span>
                       )}
                       {b.status === "active" && (
-                        <Button variant="outline" size="sm" onClick={() => cancelBooking(b.id, b.parking_slots?.slot_number ? b.id : "")}>
+                        <Button variant="outline" size="sm" onClick={() => cancelBooking(b.id, b.slot_id)}>
                           <XCircle className="h-4 w-4 mr-1" /> Cancel
                         </Button>
                       )}
