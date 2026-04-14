@@ -77,9 +77,15 @@ export default function BookingPage() {
     return true;
   };
 
+  const VEHICLE_REGEX = /^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$/;
+
   const handleProceedToPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!VEHICLE_REGEX.test(vehicleNumber)) {
+      toast({ title: "Invalid vehicle number", description: "Use Indian format: MP20AB1234", variant: "destructive" });
+      return;
+    }
     const isUnique = await checkVehicleUniqueness();
     if (!isUnique) return;
     setStep("payment");
@@ -259,7 +265,19 @@ export default function BookingPage() {
               {/* Vehicle */}
               <div className="space-y-2">
                 <Label>Vehicle Number</Label>
-                <Input value={vehicleNumber} onChange={(e) => setVehicleNumber(e.target.value)} placeholder="MP 20 AB 1234" required />
+                <Input
+                  value={vehicleNumber}
+                  onChange={(e) => {
+                    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+                    if (val.length <= 10) setVehicleNumber(val);
+                  }}
+                  placeholder="MP20AB1234"
+                  required
+                  maxLength={10}
+                />
+                {vehicleNumber && !/^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$/.test(vehicleNumber) && (
+                  <p className="text-xs text-destructive">Format: MP20AB1234 (State code + District + Series + Number)</p>
+                )}
               </div>
 
               {/* Times */}
@@ -284,7 +302,7 @@ export default function BookingPage() {
                 </div>
               )}
 
-              <Button type="submit" className="w-full" disabled={!selectedSlot || !vehicleNumber || !startTime || !endTime}>
+              <Button type="submit" className="w-full" disabled={!selectedSlot || !vehicleNumber || !startTime || !endTime || !/^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$/.test(vehicleNumber)}>
                 <CreditCard className="mr-2 h-4 w-4" />
                 Proceed to Payment
               </Button>
