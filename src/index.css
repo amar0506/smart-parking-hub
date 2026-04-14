@@ -8,34 +8,24 @@
   :root {
     --background: 210 20% 98%;
     --foreground: 220 20% 10%;
-
     --card: 0 0% 100%;
     --card-foreground: 220 20% 10%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 10%;
-
     --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
-
     --secondary: 210 40% 96%;
     --secondary-foreground: 220 20% 10%;
-
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
-
     --accent: 142 71% 45%;
     --accent-foreground: 0 0% 100%;
-
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
     --border: 214 32% 91%;
     --input: 214 32% 91%;
     --ring: 217 91% 60%;
-
     --radius: 0.75rem;
-
     --sidebar-background: 220 20% 10%;
     --sidebar-foreground: 210 40% 96%;
     --sidebar-primary: 217 91% 60%;
@@ -44,7 +34,6 @@
     --sidebar-accent-foreground: 210 40% 96%;
     --sidebar-border: 220 20% 18%;
     --sidebar-ring: 217 91% 60%;
-
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
@@ -125,6 +114,9 @@
   .animate-pulse-glow {
     animation: pulseGlow 2s ease-in-out infinite;
   }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
 }
 
 @keyframes slideUp {
@@ -145,6 +137,12 @@
 @keyframes pulseGlow {
   0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.3); }
   50% { box-shadow: 0 0 20px hsl(var(--primary) / 0.6); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-15px) rotate(3deg); }
+  66% { transform: translateY(-8px) rotate(-2deg); }
 }
 
 .leaflet-container {
