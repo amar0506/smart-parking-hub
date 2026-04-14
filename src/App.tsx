@@ -20,6 +20,7 @@ import AdminLocations from "./pages/admin/AdminLocations";
 import AdminSlots from "./pages/admin/AdminSlots";
 import AdminBookings from "./pages/admin/AdminBookings";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminLoginPage from "./pages/admin/AdminLoginPage";
 
 const queryClient = new QueryClient();
 
