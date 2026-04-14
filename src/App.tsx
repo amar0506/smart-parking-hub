@@ -20,6 +20,7 @@ import AdminLocations from "./pages/admin/AdminLocations";
 import AdminSlots from "./pages/admin/AdminSlots";
 import AdminBookings from "./pages/admin/AdminBookings";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminLoginPage from "./pages/admin/AdminLoginPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/admin/login" element={<AdminLoginPage />} />
 
             {/* User routes */}
             <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
