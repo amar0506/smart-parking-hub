@@ -40,8 +40,11 @@ const App = () => (
             {/* User routes */}
             <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
             <Route path="/map" element={<ProtectedRoute><ParkingMapPage /></ProtectedRoute>} />
+            <Route path="/find-parking" element={<ProtectedRoute><ParkingMapPage /></ProtectedRoute>} />
             <Route path="/book" element={<ProtectedRoute><BookingPage /></ProtectedRoute>} />
+            <Route path="/book-slot" element={<ProtectedRoute><BookingPage /></ProtectedRoute>} />
             <Route path="/bookings" element={<ProtectedRoute><MyBookingsPage /></ProtectedRoute>} />
+            <Route path="/my-bookings" element={<ProtectedRoute><MyBookingsPage /></ProtectedRoute>} />
             <Route path="/parking-3d" element={<ProtectedRoute><Parking3DPage /></ProtectedRoute>} />
 
             {/* Admin routes */}
