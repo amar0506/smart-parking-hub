@@ -12,7 +12,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, signOut, checkRole } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -21,6 +21,14 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       await signIn(email, password);
+      const { data: { user } } = await (await import("@/integrations/supabase/client")).supabase.auth.getUser();
+      if (!user) throw new Error("Authentication failed");
+      const role = await checkRole(user.id);
+      if (role !== "admin") {
+        await signOut();
+        toast({ title: "Access denied", description: "These credentials are not authorized for admin access.", variant: "destructive" });
+        return;
+      }
       toast({ title: "Admin access granted", description: "Welcome to the admin panel." });
       navigate("/admin");
     } catch (error: any) {

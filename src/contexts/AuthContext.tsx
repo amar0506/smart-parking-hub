@@ -10,6 +10,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  checkRole: (userId: string) => Promise<"admin" | "user">;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,7 +28,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq("user_id", userId)
       .eq("role", "admin")
       .maybeSingle();
-    setIsAdmin(!!data);
+    const adminFlag = !!data;
+    setIsAdmin(adminFlag);
+    return adminFlag;
+  };
+
+  const checkRole = async (userId: string): Promise<"admin" | "user"> => {
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    return data ? "admin" : "user";
   };
 
   useEffect(() => {
@@ -76,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isAdmin, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, isAdmin, signUp, signIn, signOut, checkRole }}>
       {children}
     </AuthContext.Provider>
   );

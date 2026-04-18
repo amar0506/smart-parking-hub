@@ -1,7 +1,13 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-export function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
+export function ProtectedRoute({
+  children,
+  adminOnly = false,
+}: {
+  children: React.ReactNode;
+  adminOnly?: boolean;
+}) {
   const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
@@ -13,7 +19,12 @@ export function ProtectedRoute({ children, adminOnly = false }: { children: Reac
   }
 
   if (!user) return <Navigate to="/login" replace />;
+
+  // Admin-only routes: block non-admins
   if (adminOnly && !isAdmin) return <Navigate to="/dashboard" replace />;
+
+  // User-only routes: redirect admins to admin dashboard
+  if (!adminOnly && isAdmin) return <Navigate to="/admin" replace />;
 
   return <>{children}</>;
 }
