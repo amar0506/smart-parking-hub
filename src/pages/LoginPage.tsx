@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, checkRole } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -21,6 +21,14 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signIn(email, password);
+      const { data: { user } } = await (await import("@/integrations/supabase/client")).supabase.auth.getUser();
+      if (!user) throw new Error("Authentication failed");
+      const role = await checkRole(user.id);
+      if (role === "admin") {
+        toast({ title: "Admin detected", description: "Redirecting to admin dashboard." });
+        navigate("/admin");
+        return;
+      }
       toast({ title: "Welcome back!", description: "You have been signed in successfully." });
       navigate("/dashboard");
     } catch (error: any) {
