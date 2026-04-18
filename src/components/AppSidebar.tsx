@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button";
 
 const userItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Find Parking", url: "/map", icon: Map },
-  { title: "Book Slot", url: "/book", icon: CalendarDays },
-  { title: "My Bookings", url: "/bookings", icon: History },
+  { title: "Find Parking", url: "/find-parking", icon: Map },
+  { title: "Book Slot", url: "/book-slot", icon: CalendarDays },
+  { title: "My Bookings", url: "/my-bookings", icon: History },
   { title: "3D View", url: "/parking-3d", icon: ParkingCircle },
 ];
 
