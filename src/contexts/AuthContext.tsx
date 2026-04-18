@@ -27,7 +27,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq("user_id", userId)
       .eq("role", "admin")
       .maybeSingle();
-    setIsAdmin(!!data);
+    const adminFlag = !!data;
+    setIsAdmin(adminFlag);
+    return adminFlag;
+  };
+
+  const checkRole = async (userId: string): Promise<"admin" | "user"> => {
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    return data ? "admin" : "user";
   };
 
   useEffect(() => {
