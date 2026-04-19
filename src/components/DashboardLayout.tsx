@@ -13,6 +13,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </header>
           <main className="flex-1 p-6 overflow-auto">{children}</main>
         </div>
+        <div className="fixed bottom-2 right-3 text-[11px] text-muted-foreground/60 pointer-events-none select-none z-50">
+          © 2026 SmartPark | Developed by Amar Vishwakarma
+        </div>
       </div>
     </SidebarProvider>
   );
