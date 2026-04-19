@@ -21,7 +21,9 @@ const userItems = [
 ];
 
 const adminItems = [
-  { title: "Admin Overview", url: "/admin", icon: BarChart3 },
+  { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
+  { title: "Find Parking", url: "/find-parking", icon: Map },
+  { title: "3D View", url: "/parking-3d", icon: ParkingCircle },
   { title: "Locations", url: "/admin/locations", icon: MapPin },
   { title: "Slots", url: "/admin/slots", icon: ParkingCircle },
   { title: "Bookings", url: "/admin/bookings", icon: CalendarDays },
@@ -38,6 +40,8 @@ export function AppSidebar() {
     await signOut();
     navigate("/");
   };
+
+  const navItems = isAdmin ? adminItems : userItems;
 
   return (
     <Sidebar collapsible="icon">
@@ -68,12 +72,12 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* User navigation */}
+        {/* Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>{isAdmin ? "Admin Panel" : "Navigation"}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {userItems.map((item) => (
+              {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} end activeClassName="bg-sidebar-accent text-sidebar-primary font-medium">
@@ -86,27 +90,6 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {/* Admin navigation */}
-        {isAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Admin Panel</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {adminItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink to={item.url} end activeClassName="bg-sidebar-accent text-sidebar-primary font-medium">
-                        <item.icon className="mr-2 h-4 w-4" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-3">
