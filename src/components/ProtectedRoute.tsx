@@ -4,9 +4,11 @@ import { useAuth } from "@/contexts/AuthContext";
 export function ProtectedRoute({
   children,
   adminOnly = false,
+  userOnly = false,
 }: {
   children: React.ReactNode;
   adminOnly?: boolean;
+  userOnly?: boolean;
 }) {
   const { user, loading, isAdmin } = useAuth();
 
@@ -24,7 +26,7 @@ export function ProtectedRoute({
   if (adminOnly && !isAdmin) return <Navigate to="/dashboard" replace />;
 
   // User-only routes: redirect admins to admin dashboard
-  if (!adminOnly && isAdmin) return <Navigate to="/admin" replace />;
+  if (userOnly && isAdmin) return <Navigate to="/admin" replace />;
 
   return <>{children}</>;
 }
