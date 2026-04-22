@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarDays, Car, CheckCircle, CreditCard, QrCode } from "lucide-react";
+import { CalendarDays, Car, CheckCircle, CreditCard, QrCode, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -37,6 +37,14 @@ export default function BookingPage() {
   const [endTime, setEndTime] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<BookingStep>("form");
+  const [recommendation, setRecommendation] = useState<{
+    slot_id: string;
+    slot_number: string;
+    floor: number;
+    location_name?: string;
+    reason: string;
+  } | null>(null);
+  const [recLoading, setRecLoading] = useState(false);
 
   useEffect(() => {
     supabase.from("parking_locations").select("*").eq("is_active", true)
@@ -44,9 +52,25 @@ export default function BookingPage() {
   }, []);
 
   useEffect(() => {
-    if (!selectedLocation) { setSlots([]); return; }
+    if (!selectedLocation) { setSlots([]); setRecommendation(null); return; }
     supabase.from("parking_slots").select("*").eq("location_id", selectedLocation).eq("status", "available")
       .then(({ data }) => setSlots(data || []));
+  }, [selectedLocation]);
+
+  // Fetch AI recommendation when location changes
+  useEffect(() => {
+    if (!selectedLocation) return;
+    setRecommendation(null);
+    setRecLoading(true);
+    const durationHrs = startTime && endTime
+      ? Math.max(1, Math.ceil((new Date(endTime).getTime() - new Date(startTime).getTime()) / 3600000))
+      : 1;
+    supabase.functions
+      .invoke("recommend-slot", { body: { location_id: selectedLocation, duration_hours: durationHrs } })
+      .then(({ data }) => {
+        if (data?.recommendation) setRecommendation(data.recommendation);
+      })
+      .finally(() => setRecLoading(false));
   }, [selectedLocation]);
 
   const selectedLoc = locations.find((l) => l.id === selectedLocation);
@@ -262,7 +286,37 @@ export default function BookingPage() {
                 </Select>
               </div>
 
-              {/* Vehicle */}
+              {/* AI Recommendation */}
+              {selectedLocation && (recLoading || recommendation) && (
+                <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex items-start gap-3 animate-fade-in">
+                  <Sparkles className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    {recLoading ? (
+                      <p className="text-sm text-muted-foreground">Finding the best slot for you…</p>
+                    ) : recommendation ? (
+                      <>
+                        <p className="text-sm font-medium text-foreground">
+                          Recommended Slot: {recommendation.slot_number}
+                          {recommendation.location_name ? ` – ${recommendation.location_name}` : ""}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{recommendation.reason}</p>
+                        {selectedSlot !== recommendation.slot_id && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="mt-2 h-7 text-xs"
+                            onClick={() => setSelectedSlot(recommendation.slot_id)}
+                          >
+                            Use this slot
+                          </Button>
+                        )}
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label>Vehicle Number</Label>
                 <Input
