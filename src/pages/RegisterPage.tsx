@@ -4,13 +4,25 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Car, Eye, EyeOff, UserPlus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const SECURITY_QUESTIONS = [
+  "What is your mother's maiden name?",
+  "What was the name of your first pet?",
+  "What city were you born in?",
+  "What was the name of your first school?",
+  "What is your favorite book?",
+  "What was your childhood nickname?",
+];
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [securityQuestion, setSecurityQuestion] = useState(SECURITY_QUESTIONS[0]);
+  const [securityAnswer, setSecurityAnswer] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
@@ -19,10 +31,14 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!securityAnswer.trim()) {
+      toast({ title: "Security answer required", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
-      await signUp(email, password, fullName);
-      toast({ title: "Account created!", description: "Please check your email to verify your account." });
+      await signUp(email, password, fullName, securityQuestion, securityAnswer);
+      toast({ title: "Account created!", description: "You can now sign in." });
       navigate("/login");
     } catch (error: any) {
       toast({ title: "Registration failed", description: error.message, variant: "destructive" });
@@ -32,7 +48,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden py-8">
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-background to-primary/10" />
       <div className="absolute inset-0">
@@ -67,6 +83,31 @@ export default function RegisterPage() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="security-question">Security Question</Label>
+              <Select value={securityQuestion} onValueChange={setSecurityQuestion}>
+                <SelectTrigger id="security-question" className="h-12 bg-background/50 border-border/50 rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SECURITY_QUESTIONS.map((q) => (
+                    <SelectItem key={q} value={q}>{q}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="security-answer">Security Answer</Label>
+              <Input
+                id="security-answer"
+                value={securityAnswer}
+                onChange={(e) => setSecurityAnswer(e.target.value)}
+                placeholder="Your answer"
+                required
+                className="h-12 bg-background/50 border-border/50 rounded-xl"
+              />
+              <p className="text-xs text-muted-foreground">You'll need this to recover your password. It is case-insensitive.</p>
             </div>
             <Button type="submit" className="w-full h-12 rounded-xl text-base font-semibold shadow-lg" disabled={loading}>
               {loading ? "Creating account..." : "Create Account"}

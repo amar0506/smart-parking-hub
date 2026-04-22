@@ -1,30 +1,80 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Car, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ShieldQuestion, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const { toast } = useToast();
+type Step = "email" | "question" | "done";
 
-  const handleSubmit = async (e: React.FormEvent) => {
+export default function ForgotPasswordPage() {
+  const [step, setStep] = useState<Step>("email");
+  const [email, setEmail] = useState("");
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+      const { data, error } = await supabase.rpc("get_security_question", { _email: email });
       if (error) throw error;
-      setSent(true);
-      toast({ title: "Reset link sent", description: "Check your inbox for the reset email." });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      if (!data) {
+        toast({
+          title: "Account not found",
+          description: "No account with that email or no security question is set.",
+          variant: "destructive",
+        });
+        return;
+      }
+      setQuestion(data as string);
+      setStep("question");
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      toast({ title: "Password too short", description: "Use at least 6 characters.", variant: "destructive" });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Passwords don't match", variant: "destructive" });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("reset-password-security", {
+        body: { email, answer, newPassword },
+      });
+      if (error) {
+        // Try to extract API error message
+        const ctx: any = (error as any).context;
+        let msg = error.message;
+        try {
+          const body = ctx && (await ctx.json?.());
+          if (body?.error) msg = body.error;
+        } catch {}
+        throw new Error(msg);
+      }
+      if ((data as any)?.error) throw new Error((data as any).error);
+      setStep("done");
+      toast({ title: "Password updated", description: "You can now sign in with your new password." });
+      setTimeout(() => navigate("/login"), 1500);
+    } catch (err: any) {
+      toast({ title: "Reset failed", description: err.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -42,20 +92,26 @@ export default function ForgotPasswordPage() {
         <div className="bg-card/70 backdrop-blur-2xl border border-border/50 rounded-3xl shadow-2xl shadow-primary/5 p-8">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/30">
-              {sent ? <CheckCircle2 className="h-8 w-8 text-primary-foreground" /> : <Mail className="h-8 w-8 text-primary-foreground" />}
+              {step === "done" ? (
+                <CheckCircle2 className="h-8 w-8 text-primary-foreground" />
+              ) : (
+                <ShieldQuestion className="h-8 w-8 text-primary-foreground" />
+              )}
             </div>
             <h1 className="text-2xl font-bold text-foreground">
-              {sent ? "Check Your Email" : "Forgot Password?"}
+              {step === "email" && "Forgot Password?"}
+              {step === "question" && "Security Check"}
+              {step === "done" && "Password Updated"}
             </h1>
             <p className="text-muted-foreground mt-1">
-              {sent
-                ? `We sent a password reset link to ${email}`
-                : "Enter your email and we'll send you a reset link"}
+              {step === "email" && "Enter your registered email to begin."}
+              {step === "question" && "Answer your security question to reset your password."}
+              {step === "done" && "Redirecting you to sign in..."}
             </p>
           </div>
 
-          {!sent ? (
-            <form onSubmit={handleSubmit} className="space-y-5">
+          {step === "email" && (
+            <form onSubmit={handleEmailSubmit} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
                 <Input
@@ -68,28 +124,63 @@ export default function ForgotPasswordPage() {
                   className="h-12 bg-background/50 border-border/50 rounded-xl focus:ring-2 focus:ring-primary/30"
                 />
               </div>
-              <Button type="submit" className="w-full h-12 rounded-xl text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-xl transition-all" disabled={loading}>
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    Sending...
-                  </span>
-                ) : "Send Reset Link"}
+              <Button type="submit" className="w-full h-12 rounded-xl text-base font-semibold shadow-lg shadow-primary/20" disabled={loading}>
+                {loading ? "Checking..." : "Continue"}
               </Button>
             </form>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground text-center">
-                Didn't receive it? Check your spam folder or try again.
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => { setSent(false); setEmail(""); }}
-                className="w-full h-12 rounded-xl"
-              >
-                Try Another Email
+          )}
+
+          {step === "question" && (
+            <form onSubmit={handleResetSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Security Question</Label>
+                <div className="rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm">
+                  {question}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="answer">Your Answer</Label>
+                <Input
+                  id="answer"
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  required
+                  className="h-12 bg-background/50 border-border/50 rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    type={showPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="h-12 bg-background/50 border-border/50 rounded-xl pr-12"
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="h-12 bg-background/50 border-border/50 rounded-xl"
+                />
+              </div>
+              <Button type="submit" className="w-full h-12 rounded-xl text-base font-semibold shadow-lg shadow-primary/20" disabled={loading}>
+                {loading ? "Updating..." : "Reset Password"}
               </Button>
-            </div>
+            </form>
           )}
 
           <div className="mt-6 text-center">
