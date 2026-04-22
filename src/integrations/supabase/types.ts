@@ -155,6 +155,8 @@ export type Database = {
           full_name: string | null
           id: string
           phone: string | null
+          security_answer_hash: string | null
+          security_question: string | null
           updated_at: string
           user_id: string
         }
@@ -164,6 +166,8 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          security_answer_hash?: string | null
+          security_question?: string | null
           updated_at?: string
           user_id: string
         }
@@ -173,6 +177,8 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          security_answer_hash?: string | null
+          security_question?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -201,12 +207,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_security_question: { Args: { _email: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      verify_security_answer: {
+        Args: { _answer_hash: string; _email: string }
+        Returns: string
       }
     }
     Enums: {
