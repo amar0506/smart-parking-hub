@@ -7,7 +7,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<void>;
+  signUp: (email: string, password: string, fullName: string, securityQuestion: string, securityAnswer: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   checkRole: (userId: string) => Promise<"admin" | "user">;
@@ -69,11 +69,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    fullName: string,
+    securityQuestion: string,
+    securityAnswer: string,
+  ) => {
+    // Hash the security answer client-side (normalized) before storing
+    const normalized = securityAnswer.trim().toLowerCase();
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(normalized));
+    const security_answer_hash = Array.from(new Uint8Array(buf))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+        data: {
+          full_name: fullName,
+          security_question: securityQuestion,
+          security_answer_hash,
+        },
+      },
     });
     if (error) throw error;
   };
