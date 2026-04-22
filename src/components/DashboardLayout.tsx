@@ -1,7 +1,9 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { useAutoReleaseSlots } from "@/hooks/useAutoReleaseSlots";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  useAutoReleaseSlots();
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
