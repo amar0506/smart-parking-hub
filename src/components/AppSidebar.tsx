@@ -17,13 +17,11 @@ const userItems = [
   { title: "Find Parking", url: "/find-parking", icon: Map },
   { title: "Book Slot", url: "/book-slot", icon: CalendarDays },
   { title: "My Bookings", url: "/my-bookings", icon: History },
-  { title: "3D View", url: "/parking-3d", icon: ParkingCircle },
 ];
 
 const adminItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
   { title: "Find Parking", url: "/find-parking", icon: Map },
-  { title: "3D View", url: "/parking-3d", icon: ParkingCircle },
   { title: "Locations", url: "/admin/locations", icon: MapPin },
   { title: "Slots", url: "/admin/slots", icon: ParkingCircle },
   { title: "Bookings", url: "/admin/bookings", icon: CalendarDays },
