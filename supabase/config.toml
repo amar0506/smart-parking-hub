@@ -1,1 +1,7 @@
 project_id = "abldjdltfkojlmeqcmjg"
+
+[functions.reset-password-security]
+verify_jwt = false
+
+[functions.recommend-slot]
+verify_jwt = false
