@@ -286,7 +286,37 @@ export default function BookingPage() {
                 </Select>
               </div>
 
-              {/* Vehicle */}
+              {/* AI Recommendation */}
+              {selectedLocation && (recLoading || recommendation) && (
+                <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex items-start gap-3 animate-fade-in">
+                  <Sparkles className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    {recLoading ? (
+                      <p className="text-sm text-muted-foreground">Finding the best slot for you…</p>
+                    ) : recommendation ? (
+                      <>
+                        <p className="text-sm font-medium text-foreground">
+                          Recommended Slot: {recommendation.slot_number}
+                          {recommendation.location_name ? ` – ${recommendation.location_name}` : ""}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{recommendation.reason}</p>
+                        {selectedSlot !== recommendation.slot_id && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="mt-2 h-7 text-xs"
+                            onClick={() => setSelectedSlot(recommendation.slot_id)}
+                          >
+                            Use this slot
+                          </Button>
+                        )}
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label>Vehicle Number</Label>
                 <Input
